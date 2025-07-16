@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📸 收據拍照上傳</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+    h2 {
+      color: #333;
+    }
+    #upload-area {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    input[type="file"] {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    button {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #ccc;
+    }
+    #status {
+      margin-top: 1rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h2>📤 拍照上傳進貨收據</h2>
+  <div id="upload-area">
+    <input type="file" id="fileInput" accept="image/*" capture="environment">
+    <button onclick="uploadImage()">上傳圖片</button>
+    <div id="status"></div>
+  </div>
+
+  <script>
+    async function uploadImage() {
+      const fileInput = document.getElementById('fileInput');
+      const status = document.getElementById('status');
+      const file = fileInput.files[0];
+      if (!file) {
+        status.textContent = '請先選擇一張圖片';
+        return;
+      }
+      status.textContent = '⏳ 上傳中...';
+
+      const form = new FormData();
+      form.append("image", file);
+
+      try {
+        const res = await fetch("https://script.google.com/macros/s/YOUR_WEB_APP_URL/exec", {
+          method: "POST",
+          body: form
+        });
+
+        if (res.ok) {
+          status.textContent = '✅ 上傳成功！';
+          fileInput.value = '';
+        } else {
+          status.textContent = '❌ 上傳失敗，請稍後再試';
+        }
+      } catch (err) {
+        status.textContent = `❌ 錯誤：${err.message}`;
+      }
+    }
+  </script>
+</body>
+</html>
