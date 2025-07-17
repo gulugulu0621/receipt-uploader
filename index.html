@@ -1,17 +1,59 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>發票上傳表單</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>進貨發票上傳</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: #f9f9f9; }
+    input, button { padding: 10px; font-size: 1rem; margin: 10px 0; width: 100%; max-width: 400px; }
+    .preview { margin-top: 20px; }
+  </style>
 </head>
-<body style="font-family: sans-serif; padding: 20px;">
-  <h2>📸 上傳收據 / 發票圖片</h2>
-  <form method="POST" enctype="multipart/form-data" action="">
-    <label for="file">選擇圖片：</label><br>
-    <input type="file" id="file" name="file" accept="image/*" capture="environment" required><br><br>
-    <input type="submit" value="📤 上傳">
-  </form>
-  <p>＊上傳後將自動進行 OCR 並寫入 Google Sheets</p>
+<body>
+  <h2>📷 上傳進貨發票／收據</h2>
+  <input type="file" id="imageInput" accept="image/*" capture="environment" />
+  <button onclick="uploadImage()">📤 上傳圖片</button>
+  <div class="preview">
+    <img id="preview" src="" alt="" width="300" style="display:none;" />
+    <p id="status"></p>
+  </div>
+
+  <script>
+    const endpoint = "https://script.google.com/macros/s/AKfycbwwu5YOGPKWg18lmQHmyfcvB7es_BtC_O1Bc1x63MjNeiiTc3MMl0MF0EAdMDHjt9Se/exec";
+
+    function uploadImage() {
+      const input = document.getElementById('imageInput');
+      const file = input.files[0];
+      const reader = new FileReader();
+
+      if (!file) return alert("請選擇一張圖片");
+
+      reader.onload = function(e) {
+        const base64Image = e.target.result;
+        document.getElementById('preview').src = base64Image;
+        document.getElementById('preview').style.display = 'block';
+        document.getElementById('status').textContent = '⏳ 上傳中...';
+
+        fetch(endpoint, {
+          method: 'POST',
+          body: JSON.stringify({ imageBase64: base64Image }),
+          headers: { 'Content-Type': 'application/json' }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            document.getElementById('status').textContent = '✅ 上傳成功！';
+          } else {
+            document.getElementById('status').textContent = '❌ 錯誤：' + data.message;
+          }
+        })
+        .catch(err => {
+          document.getElementById('status').textContent = '❌ 上傳失敗';
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  </script>
 </body>
 </html>
