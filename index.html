@@ -3,73 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>進貨發票上傳</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      padding: 2em;
-      background: #f9f9f9;
-    }
-    input[type="file"] {
-      margin-top: 1em;
-    }
-    button {
-      margin-top: 1em;
-      padding: 0.6em 2em;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    .status {
-      margin-top: 1em;
-      font-size: 14px;
-      color: #555;
-    }
-  </style>
+  <title>發票上傳表單</title>
 </head>
-<body>
-  <h1>📸 拍照上傳進貨發票</h1>
-  <input type="file" id="fileInput" accept="image/*" capture="environment">
-  <br>
-  <button onclick="uploadFile()">上傳圖片</button>
-  <div class="status" id="status"></div>
-
-  <script>
-    async function uploadFile() {
-      const input = document.getElementById('fileInput');
-      const status = document.getElementById('status');
-
-      if (!input.files.length) {
-        status.innerText = '請先選擇一張圖片';
-        return;
-      }
-
-      const file = input.files[0];
-      const formData = new FormData();
-      formData.append('file', file);
-
-      status.innerText = '🚀 上傳中...';
-
-      try {
-        const res = await fetch('https://script.google.com/macros/s/YOUR_DEPLOYED_WEBAPP_URL/exec', {
-          method: 'POST',
-          body: formData
-        });
-
-        const result = await res.text();
-        status.innerText = '✅ 上傳成功：' + result;
-      } catch (err) {
-        console.error(err);
-        status.innerText = '❌ 上傳失敗';
-      }
-    }
-  </script>
+<body style="font-family: sans-serif; padding: 20px;">
+  <h2>📸 上傳收據 / 發票圖片</h2>
+  <form method="POST" enctype="multipart/form-data" action="">
+    <label for="file">選擇圖片：</label><br>
+    <input type="file" id="file" name="file" accept="image/*" capture="environment" required><br><br>
+    <input type="submit" value="📤 上傳">
+  </form>
+  <p>＊上傳後將自動進行 OCR 並寫入 Google Sheets</p>
 </body>
 </html>
